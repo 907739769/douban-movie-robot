@@ -1,5 +1,6 @@
 package cn.jackding.doubanmovierobot.crawler;
 
+import cn.jackding.doubanmovierobot.config.Constant;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Site;
@@ -22,7 +23,7 @@ public class DoubanMovieDetail implements PageProcessor {
     @Override
     public void process(Page page) {
         String imdb = page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">IMDb:</span>([^<]+)<br>"));
-        page.putField("imdb", imdb.trim());
+        page.putField(Constant.IMDB, imdb.trim());
 
     }
 

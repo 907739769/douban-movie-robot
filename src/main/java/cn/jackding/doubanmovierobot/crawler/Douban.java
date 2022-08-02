@@ -1,5 +1,6 @@
 package cn.jackding.doubanmovierobot.crawler;
 
+import cn.jackding.doubanmovierobot.config.Constant;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Site;
@@ -24,10 +25,10 @@ public class Douban implements PageProcessor {
         List<String> movieUrlList = page.getHtml().xpath("//li[@class=\"title\"]/a/@href").all();
         List<String> addDateList = page.getHtml().xpath("//li/span[@class=\"date\"]/text()").all();
         List<String> movieNameList = page.getHtml().xpath("//div[@class=\"item\"]/div[@class=\"info\"]/ul/li[@class=\"title\"]/a/em/text()").all();
-        page.putField("nextPageList", nextPageList);
-        page.putField("movieUrlList", movieUrlList);
-        page.putField("addDateList", addDateList);
-        page.putField("movieNameList", movieNameList);
+        page.putField(Constant.NEXT_PAGE_LIST, nextPageList);
+        page.putField(Constant.MOVIE_URL_LIST, movieUrlList);
+        page.putField(Constant.ADD_DATE_LIST, addDateList);
+        page.putField(Constant.MOVIE_NAME_LIST, movieNameList);
     }
 
     @Override
