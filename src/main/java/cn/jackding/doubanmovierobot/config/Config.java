@@ -19,6 +19,16 @@ public class Config {
 
     public static String radarrQualityProfileId;
 
+    public static String sonarrUrl;
+
+    public static String sonarrApikey;
+
+    public static String sonarrRootFolderPath;
+
+    public static String sonarrQualityProfileId;
+
+    public static String sonarrLanguageProfileId;
+
     @Value("${radarr.url:127.0.0.1:7878}")
     public void setRadarrUrl(String radarrHost) {
         Config.radarrUrl = radarrHost;
@@ -37,6 +47,31 @@ public class Config {
     @Value("${radarr.qualityProfileId:1}")
     public void setRadarrQualityProfileId(String radarrQualityProfileId) {
         Config.radarrQualityProfileId = radarrQualityProfileId;
+    }
+
+    @Value("${sonarr.url:127.0.0.1:8989}")
+    public void setSonarrUrl(String sonarrHost) {
+        Config.sonarrUrl = sonarrHost;
+    }
+
+    @Value("${sonarr.apikey:409c7d9926f84f93bf1a7e7dd9a28bf8}")
+    public void setSonarrApikey(String sonarrApikey) {
+        Config.sonarrApikey = sonarrApikey;
+    }
+
+    @Value("${sonarr.rootFolderPath:/tv}")
+    public void setSonarrRootFolderPath(String sonarrRootFolderPath) {
+        Config.sonarrRootFolderPath = sonarrRootFolderPath;
+    }
+
+    @Value("${sonarr.qualityProfileId:1}")
+    public void setSonarrQualityProfileId(String sonarrQualityProfileId) {
+        Config.sonarrQualityProfileId = sonarrQualityProfileId;
+    }
+
+    @Value("${sonarr.languageProfileId:3}")
+    public void setSonarrLanguageProfileId(String sonarrLanguageProfileId) {
+        Config.sonarrLanguageProfileId = sonarrLanguageProfileId;
     }
 
 
