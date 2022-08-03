@@ -54,7 +54,9 @@ public class SonarrUtils {
         json.put("rootFolderPath", Config.sonarrRootFolderPath);
         json.put("addOptions", JSON.parse("{searchForSeries: true}"));
         json.put("monitored", true);
-        json.put("minimumAvailability", "announced");
+        json.put("seriesType", "Standard");
+        json.put("seasonFolder", true);
+        json.put("languageProfileId", Config.sonarrLanguageProfileId);
         try {
             HttpClientResult result = HttpClientUtils.doPost(url + "/api/v3/series", headers, json.toJSONString());
             return result;

@@ -8,7 +8,9 @@ package cn.jackding.doubanmovierobot.config;
 public interface Constant {
 
     String IMDB = "imdb";
-
+    String VIDEO_TYPE="videoType";
+    String MOVIE="MOVIE";
+    String SERIES="SERIES";
     String NEXT_PAGE_LIST = "nextPageList";
 
     String MOVIE_URL_LIST = "movieUrlList";

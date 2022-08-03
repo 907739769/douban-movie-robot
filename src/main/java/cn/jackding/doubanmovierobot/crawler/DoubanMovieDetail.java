@@ -1,6 +1,7 @@
 package cn.jackding.doubanmovierobot.crawler;
 
 import cn.jackding.doubanmovierobot.config.Constant;
+import org.apache.commons.lang3.StringUtils;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Site;
@@ -23,8 +24,16 @@ public class DoubanMovieDetail implements PageProcessor {
     @Override
     public void process(Page page) {
         String imdb = page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">IMDb:</span>([^<]+)<br>"));
+        String isJs = page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">集数:</span>(.*?)<br>"));
+        String isPc = page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">单集片长:</span>(.*?)<br>"));
         page.putField(Constant.IMDB, imdb.trim());
-
+        String videoType = Constant.MOVIE;
+        System.out.println("js"+isJs);
+        System.out.println("pc"+isPc);
+        if (StringUtils.isNotBlank(isJs) || StringUtils.isNotBlank(isPc)) {
+            videoType = Constant.SERIES;
+        }
+        page.putField(Constant.VIDEO_TYPE, videoType);
     }
 
     @Override
@@ -33,7 +42,7 @@ public class DoubanMovieDetail implements PageProcessor {
     }
 
     public static void main(String[] args) {
-        String url = "https://movie.douban.com/subject/35404023/";
+        String url = "https://movie.douban.com/subject/24883222/";
         ResultItemsCollectorPipeline pipeline = new ResultItemsCollectorPipeline();
         Spider.create(new DoubanMovieDetail()).addUrl(url)
                 .addPipeline(pipeline).run();
