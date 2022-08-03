@@ -22,7 +22,7 @@ public class RadarrUtils {
         put("X-Api-Key", Config.radarrApikey);
     }};
 
-    private static final String url = Config.radarrHost + ":" + Config.radarrPort;
+    private static final String url = Config.radarrUrl;
 
     public static HttpClientResult getAllMovie() {
         try {
@@ -48,20 +48,20 @@ public class RadarrUtils {
     }
 
     public static HttpClientResult addMovie(String movieInfo) {
-        JSONObject json=JSON.parseObject(movieInfo);
-        System.out.println("11  "+json);
-        json.put("qualityProfileId","1");
-        System.out.println("22  "+json);
+        JSONObject json = JSON.parseObject(movieInfo);
+        json.put("qualityProfileId", Config.radarrQualityProfileId);
+        json.put("rootFolderPath", Config.radarrRootFolderPath);
+        json.put("addOptions", JSON.parse("{searchForMovie: true}"));
+        json.put("monitored", true);
+        json.put("minimumAvailability", "announced");
         try {
-            HttpClientResult result = HttpClientUtils.doPost(url + "/api/v3/movie/lookup", headers, json.toJSONString());
+            HttpClientResult result = HttpClientUtils.doPost(url + "/api/v3/movie", headers, json.toJSONString());
             return result;
         } catch (Exception e) {
             log.error("", e);
         }
         return null;
     }
-
-
 
 
 }

@@ -11,9 +11,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class Config {
 
-    public static String radarrHost;
-
-    public static String radarrPort;
+    public static String radarrUrl;
 
     public static String radarrApikey;
 
@@ -21,14 +19,9 @@ public class Config {
 
     public static String radarrQualityProfileId;
 
-    @Value("${radarr.host:127.0.0.1}")
-    public void setRadarrHost(String radarrHost) {
-        Config.radarrHost = radarrHost;
-    }
-
-    @Value("${radarr.port:7878}")
-    public void setRadarrPort(String radarrPort) {
-        Config.radarrPort = radarrPort;
+    @Value("${radarr.url:127.0.0.1:7878}")
+    public void setRadarrUrl(String radarrHost) {
+        Config.radarrUrl = radarrHost;
     }
 
     @Value("${radarr.apikey:9c6f79a4b11f4ba79d6e50b5b808e28b}")
