@@ -10,13 +10,18 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.pipeline.ResultItemsCollectorPipeline;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @Author Jack
@@ -28,11 +33,14 @@ public class DoubanCore {
 
     public void run(String doubanUserID) {
         String url = "https://movie.douban.com/people/" + doubanUserID + "/wish?start=0&sort=time&rating=all&filter=all&mode=grid";
+        HttpClientResult allMovieResult = RadarrUtils.getAllMovie();
+        HttpClientResult allSeries = SonarrUtils.getAllSeries();
         while (StringUtils.isNotBlank(url)) {
             ResultItemsCollectorPipeline pipeline = new ResultItemsCollectorPipeline();
             Spider.create(new Douban()).addUrl(url)
                     .addPipeline(pipeline).run();
             List<ResultItems> resultItemsList = pipeline.getCollected();
+            log.info("url:{},resultItemsList:{}", url, resultItemsList);
             ResultItems resultItem = null;
             if (!CollectionUtils.isEmpty(resultItemsList)) {
                 resultItem = resultItemsList.get(0);
@@ -43,17 +51,17 @@ public class DoubanCore {
 
             List<String> movieUrlList = resultItem.get(Constant.MOVIE_URL_LIST);
             List<String> addDateList = resultItem.get(Constant.ADD_DATE_LIST);
-            List<String> movieNameList = resultItem.get(Constant.MOVIE_NAME_LIST);
+            List<String> videoNameList = resultItem.get(Constant.VIDEO_NAME_LIST);
             for (int i = 0; i < movieUrlList.size(); i++) {
                 String movieUrl = movieUrlList.get(i);
-                String movieName = movieNameList.get(i);
+                String videoName = videoNameList.get(i);
                 String addDate = addDateList.get(i);
 
                 ResultItemsCollectorPipeline pipeline1 = new ResultItemsCollectorPipeline();
                 Spider.create(new DoubanMovieDetail()).addUrl(movieUrl)
                         .addPipeline(pipeline1).run();
                 List<ResultItems> resultItems = pipeline1.getCollected();
-                System.out.println("111"+resultItems);
+                log.info("url:{},resultItemsList:{}", movieUrl, resultItems);
                 if (!CollectionUtils.isEmpty(resultItems)) {
                     resultItem = resultItems.get(0);
                 } else {
@@ -62,23 +70,32 @@ public class DoubanCore {
                 }
                 String imdb = resultItem.get(Constant.IMDB);
                 String videoType = resultItem.get(Constant.VIDEO_TYPE);
-                if (videoType.equals(Constant.MOVIE)) {
-                    HttpClientResult allMovieResult = RadarrUtils.getAllMovie();
+                String otherName = resultItem.get(Constant.OTHER_NAME);
+                if (Constant.MOVIE.equals(videoType)) {
+
+                    if (null == allMovieResult || StringUtils.isBlank(allMovieResult.getContent())) {
+                        return;
+                    }
+
                     JSONArray allMovieJsonArray = JSONArray.parseArray(allMovieResult.getContent());
-                    log.info("正在添加电影" + movieName);
+                    log.info("正在添加电影:{},IMDBID:{}", videoName, imdb);
                     if (exitMovie(imdb, allMovieJsonArray)) {
-                        log.info(movieName + "已存在");
+                        log.info(videoName + "已存在");
                         continue;
                     }
-                    addMovie(imdb, movieName);
-                } else if (videoType.equals(Constant.SERIES)) {
-                    HttpClientResult allSeries = SonarrUtils.getAllSeries();
+                    addMovie(imdb, videoName);
+                } else if (Constant.SERIES.equals(videoType)) {
+
+                    if (null == allSeries || StringUtils.isBlank(allSeries.getContent())) {
+                        return;
+                    }
+
                     JSONArray allSeriesJSONArray = JSONArray.parseArray(allSeries.getContent());
 
-                    if (exitSeries(imdb, movieName, allSeriesJSONArray)) {
+                    if (exitSeries(imdb, videoName, otherName, allSeriesJSONArray)) {
                         continue;
                     }
-                    addSeries(imdb, movieName);
+                    addSeries(imdb, videoName, otherName);
                 }
             }
 
@@ -97,24 +114,38 @@ public class DoubanCore {
         for (Object json : allMovie) {
             JSONObject json1 = JSON.parseObject(json.toString());
             String imdbid = json1.getString("imdbId");
-            return imdbid.equals(imdb);
+            if (StringUtils.isNotBlank(imdbid) && imdbid.equals(imdb)) {
+                return true;
+            }
         }
         return false;
     }
 
     public void addMovie(String imdb, String movieName) {
         HttpClientResult movie = RadarrUtils.searchMovie(movieName.split(" / ")[0]);
+
+        if (null == movie || StringUtils.isEmpty(movie.getContent())) {
+            log.warn("查询电影{}没有结果", movieName);
+            return;
+        }
+
         JSONArray movieJsonArray = JSONArray.parseArray(movie.getContent());
 
         String movieInfo = "";
         for (Object json : movieJsonArray) {
             JSONObject json1 = JSON.parseObject(json.toString());
             String imdbid = json1.getString("imdbId");
-            if (imdbid.equals(imdb)) {
+            if (StringUtils.isNotBlank(imdbid) && imdbid.equals(imdb)) {
                 movieInfo = json1.toJSONString();
                 break;
             }
         }
+
+        if (StringUtils.isBlank(movieInfo)) {
+            log.warn("电影{}没有匹配到,添加失败", movieName);
+            return;
+        }
+
         if (null == RadarrUtils.addMovie(movieInfo)) {
             log.error(movieName + "电影添加失败");
         } else {
@@ -122,35 +153,96 @@ public class DoubanCore {
         }
     }
 
-    public boolean exitSeries(String imdb, String movieName, JSONArray allSeries) {
+    public boolean exitSeries(String imdb, String seriesName, String otherName, JSONArray allSeries) {
+        String[] seriesNames = {};
+        if (StringUtils.isNotBlank(seriesName)) {
+            seriesNames = seriesName.split(" / ");
+        }
+        String[] otherNames = {};
+        if (StringUtils.isNotBlank(otherName)) {
+            otherNames = otherName.split(" / ");
+        }
+        List<String> allNames = new ArrayList<>(Arrays.asList(seriesNames));
+        allNames.addAll(Arrays.asList(otherNames));
+        log.info("allNames:{}", allNames);
         for (Object json : allSeries) {
             JSONObject json1 = JSON.parseObject(json.toString());
             String imdbid = json1.getString("imdbId");
             String cleantitle = json1.getString("cleanTitle");
-            return imdbid.equals(imdb) || movieName.split(" / ")[1].split("Season")[0].replaceAll("[^a-zA-Z0-9]", "").equals(cleantitle);
+            if ((StringUtils.isNotBlank(imdbid) && imdbid.equals(imdb)) || (StringUtils.isNotBlank(cleantitle) && matchName(cleantitle, allNames))) {
+                return true;
+            }
         }
         return false;
     }
 
-    public void addSeries(String imdb, String movieName) {
-        HttpClientResult series = SonarrUtils.searchSeries(movieName.split(" / ")[0]);
-        JSONArray seriesJsonArray = JSONArray.parseArray(series.getContent());
+    public void addSeries(String imdb, String seriesName, String otherName) {
+        String[] seriesNames = {};
+        if (StringUtils.isNotBlank(seriesName)) {
+            seriesNames = seriesName.split(" / ");
+        }
+        String[] otherNames = {};
+        if (StringUtils.isNotBlank(otherName)) {
+            otherNames = otherName.split(" / ");
+        }
+        List<String> allNames = new ArrayList<>(Arrays.asList(seriesNames));
+        allNames.addAll(Arrays.asList(otherNames));
+        for (String a : allNames) {
+            HttpClientResult series = SonarrUtils.searchSeries(formatName(a));
+            if (null == series || StringUtils.isEmpty(series.getContent())) {
+                log.warn("查询电视剧{}没有结果", seriesName);
+                return;
+            }
+            JSONArray seriesJsonArray = JSONArray.parseArray(series.getContent());
 
-        String seriesInfo = "";
-        for (Object json : seriesJsonArray) {
-            JSONObject json1 = JSON.parseObject(json.toString());
-            String imdbid = json1.getString("imdbId");
-            String cleantitle = json1.getString("cleanTitle");
-            if (imdbid.equals(imdb) || movieName.split(" / ")[1].split("Season")[0].replaceAll("[^a-zA-Z0-9]", "").equals(cleantitle)) {
-                seriesInfo = json1.toJSONString();
+            String seriesInfo = "";
+            for (Object json : seriesJsonArray) {
+                JSONObject json1 = JSON.parseObject(json.toString());
+                String imdbid = json1.getString("imdbId");
+                String cleantitle = json1.getString("cleanTitle");
+                if ((StringUtils.isNotBlank(imdb) && imdb.equals(imdbid)) || (StringUtils.isNotBlank(cleantitle) && matchName(cleantitle, allNames))) {
+                    seriesInfo = json1.toJSONString();
+                    break;
+                }
+            }
+
+            if (StringUtils.isBlank(seriesInfo)) {
+                log.warn("电视剧{}没有匹配到,添加失败", seriesName);
+                continue;
+            }
+
+            if (null == SonarrUtils.addSeries(seriesInfo)) {
+                log.error(seriesName + "电视剧添加失败");
+            } else {
+                log.info(seriesName + "电视剧添加成功");
                 break;
             }
         }
-        if (null == SonarrUtils.addSeries(seriesInfo)) {
-            log.error(movieName + "电视剧添加失败");
+
+    }
+
+    private String formatName(String name) {
+        if (isContainChinese(name)) {
+            name = name.split(" ")[0].trim();
         } else {
-            log.info(movieName + "电视剧添加成功");
+            name = name.split("Season")[0].trim();
         }
+        return name;
+    }
+
+    private boolean matchName(String name, List<String> names) {
+        for (String a : names) {
+            if (name.equals(a.split("Season")[0].replaceAll("[^a-zA-Z0-9]", "").toLowerCase())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean isContainChinese(String str) {
+        Pattern p = Pattern.compile("[\u4e00-\u9fa5]");
+        Matcher m = p.matcher(str);
+        return m.find();
     }
 
 }

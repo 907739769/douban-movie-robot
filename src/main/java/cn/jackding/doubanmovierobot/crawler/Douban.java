@@ -32,7 +32,7 @@ public class Douban implements PageProcessor {
         page.putField(Constant.NEXT_PAGE_LIST, nextPageList);
         page.putField(Constant.MOVIE_URL_LIST, movieUrlList);
         page.putField(Constant.ADD_DATE_LIST, addDateList);
-        page.putField(Constant.MOVIE_NAME_LIST, movieNameList);
+        page.putField(Constant.VIDEO_NAME_LIST, movieNameList);
     }
 
     @Override
@@ -41,7 +41,7 @@ public class Douban implements PageProcessor {
     }
 
     public static void main(String[] args) {
-        String url = "https://movie.douban.com/people/ILWTFT/wish?start=0&sort=time&rating=all&filter=all&mode=grid";
+        String url = "https://movie.douban.com/people/193538704/wish?start=0&sort=time&rating=all&filter=all&mode=grid";
         ResultItemsCollectorPipeline pipeline = new ResultItemsCollectorPipeline();
         Spider.create(new Douban()).addUrl(url)
                 .addPipeline(pipeline).run();

@@ -26,14 +26,14 @@ public class DoubanMovieDetail implements PageProcessor {
         String imdb = page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">IMDb:</span>([^<]+)<br>"));
         String isJs = page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">集数:</span>(.*?)<br>"));
         String isPc = page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">单集片长:</span>(.*?)<br>"));
-        page.putField(Constant.IMDB, imdb.trim());
+        String otherName=page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">又名:</span>(.*?)<br>"));
+        page.putField(Constant.IMDB, StringUtils.isBlank(imdb) ? "" : imdb.trim());
         String videoType = Constant.MOVIE;
-        System.out.println("js"+isJs);
-        System.out.println("pc"+isPc);
         if (StringUtils.isNotBlank(isJs) || StringUtils.isNotBlank(isPc)) {
             videoType = Constant.SERIES;
         }
         page.putField(Constant.VIDEO_TYPE, videoType);
+        page.putField(Constant.OTHER_NAME, otherName);
     }
 
     @Override
@@ -42,7 +42,7 @@ public class DoubanMovieDetail implements PageProcessor {
     }
 
     public static void main(String[] args) {
-        String url = "https://movie.douban.com/subject/24883222/";
+        String url = "https://movie.douban.com/subject/35426353/";
         ResultItemsCollectorPipeline pipeline = new ResultItemsCollectorPipeline();
         Spider.create(new DoubanMovieDetail()).addUrl(url)
                 .addPipeline(pipeline).run();
