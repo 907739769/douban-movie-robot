@@ -31,6 +31,9 @@ public class Config {
 
     public static String sonarrLanguageProfileId;
 
+
+    public static String scheduledTaskCron;
+
     @Value("${douban.userIds}")
     public void setDoubanUserIds(String doubanUserIds) {
         Config.doubanUserIds = doubanUserIds;
@@ -79,6 +82,11 @@ public class Config {
     @Value("${sonarr.languageProfileId:3}")
     public void setSonarrLanguageProfileId(String sonarrLanguageProfileId) {
         Config.sonarrLanguageProfileId = sonarrLanguageProfileId;
+    }
+
+    @Value("${scheduled.task.cron}")
+    public void setScheduledTaskCron(String scheduledTaskCron) {
+        Config.scheduledTaskCron = scheduledTaskCron;
     }
 
 
