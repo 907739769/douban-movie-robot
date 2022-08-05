@@ -4,5 +4,5 @@ LABEL description="可以自动从豆瓣用户的想看列表中自动获取电�
 LABEL authors="JackDing"
 COPY ./*.jar /application.jar
 VOLUME /config
-ENV TZ=Asia/Shanghai \
-ENTRYPOINT ["java -jar /application.jar"]
+ENV TZ=Asia/Shanghai
+ENTRYPOINT ["java", "-jar", "/application.jar"]
