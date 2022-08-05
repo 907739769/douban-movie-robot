@@ -1,14 +1,12 @@
 package cn.jackding.doubanmovierobot.crawler;
 
 import cn.jackding.doubanmovierobot.config.Constant;
-import org.apache.commons.lang3.StringUtils;
 import us.codecraft.webmagic.Page;
 import us.codecraft.webmagic.ResultItems;
 import us.codecraft.webmagic.Site;
 import us.codecraft.webmagic.Spider;
 import us.codecraft.webmagic.pipeline.ResultItemsCollectorPipeline;
 import us.codecraft.webmagic.processor.PageProcessor;
-import us.codecraft.webmagic.selector.RegexSelector;
 
 import java.util.List;
 

@@ -11,6 +11,8 @@ import org.springframework.stereotype.Component;
 @Component
 public class Config {
 
+    public static String doubanUserIds;
+
     public static String radarrUrl;
 
     public static String radarrApikey;
@@ -28,6 +30,11 @@ public class Config {
     public static String sonarrQualityProfileId;
 
     public static String sonarrLanguageProfileId;
+
+    @Value("${ douban.userIds}")
+    public void setDoubanUserIds(String doubanUserIds) {
+        Config.doubanUserIds = doubanUserIds;
+    }
 
     @Value("${radarr.url:127.0.0.1:7878}")
     public void setRadarrUrl(String radarrHost) {

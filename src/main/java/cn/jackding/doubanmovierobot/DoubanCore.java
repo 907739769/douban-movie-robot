@@ -10,7 +10,6 @@ import com.alibaba.fastjson2.JSON;
 import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 import us.codecraft.webmagic.ResultItems;
@@ -40,7 +39,7 @@ public class DoubanCore {
             Spider.create(new Douban()).addUrl(url)
                     .addPipeline(pipeline).run();
             List<ResultItems> resultItemsList = pipeline.getCollected();
-            log.info("url:{},resultItemsList:{}", url, resultItemsList);
+            log.info("url:[{}],resultItemsList:[{}]", url, resultItemsList);
             ResultItems resultItem = null;
             if (!CollectionUtils.isEmpty(resultItemsList)) {
                 resultItem = resultItemsList.get(0);
@@ -61,7 +60,7 @@ public class DoubanCore {
                 Spider.create(new DoubanMovieDetail()).addUrl(movieUrl)
                         .addPipeline(pipeline1).run();
                 List<ResultItems> resultItems = pipeline1.getCollected();
-                log.info("url:{},resultItemsList:{}", movieUrl, resultItems);
+                log.info("url:[{}],resultItemsList:[{}]", movieUrl, resultItems);
                 if (!CollectionUtils.isEmpty(resultItems)) {
                     resultItem = resultItems.get(0);
                 } else {
@@ -78,7 +77,7 @@ public class DoubanCore {
                     }
 
                     JSONArray allMovieJsonArray = JSONArray.parseArray(allMovieResult.getContent());
-                    log.info("正在添加电影:{},IMDBID:{}", videoName, imdb);
+                    log.info("正在添加电影:[{}],IMDBID:[{}]", videoName, imdb);
                     if (exitMovie(imdb, allMovieJsonArray)) {
                         log.info(videoName + "已存在");
                         continue;
@@ -125,7 +124,7 @@ public class DoubanCore {
         HttpClientResult movie = RadarrUtils.searchMovie(movieName.split(" / ")[0]);
 
         if (null == movie || StringUtils.isEmpty(movie.getContent())) {
-            log.warn("查询电影{}没有结果", movieName);
+            log.warn("查询电影[{}]没有结果", movieName);
             return;
         }
 
@@ -142,7 +141,7 @@ public class DoubanCore {
         }
 
         if (StringUtils.isBlank(movieInfo)) {
-            log.warn("电影{}没有匹配到,添加失败", movieName);
+            log.warn("电影[{}]没有匹配到,添加失败", movieName);
             return;
         }
 
@@ -164,7 +163,7 @@ public class DoubanCore {
         }
         List<String> allNames = new ArrayList<>(Arrays.asList(seriesNames));
         allNames.addAll(Arrays.asList(otherNames));
-        log.info("allNames:{}", allNames);
+        log.info("allNames:[{}]", allNames);
         for (Object json : allSeries) {
             JSONObject json1 = JSON.parseObject(json.toString());
             String imdbid = json1.getString("imdbId");
@@ -190,7 +189,7 @@ public class DoubanCore {
         for (String a : allNames) {
             HttpClientResult series = SonarrUtils.searchSeries(formatName(a));
             if (null == series || StringUtils.isEmpty(series.getContent())) {
-                log.warn("查询电视剧{}没有结果", seriesName);
+                log.warn("查询电视剧[{}]没有结果", seriesName);
                 return;
             }
             JSONArray seriesJsonArray = JSONArray.parseArray(series.getContent());
@@ -207,7 +206,7 @@ public class DoubanCore {
             }
 
             if (StringUtils.isBlank(seriesInfo)) {
-                log.warn("电视剧{}没有匹配到,添加失败", seriesName);
+                log.warn("电视剧[{}]没有匹配到,添加失败", seriesName);
                 continue;
             }
 
