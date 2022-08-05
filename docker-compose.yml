@@ -1,0 +1,11 @@
+version: "3"
+services:
+  app:
+    container_name: douban_movie_robot
+    image: 'jacksaoding/douban_movie_robot:latest'
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - /volume1/docker/douban-movie-robot/config:/config
