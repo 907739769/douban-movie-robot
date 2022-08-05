@@ -31,7 +31,7 @@ public class Config {
 
     public static String sonarrLanguageProfileId;
 
-    @Value("${ douban.userIds}")
+    @Value("${douban.userIds}")
     public void setDoubanUserIds(String doubanUserIds) {
         Config.doubanUserIds = doubanUserIds;
     }
