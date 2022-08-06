@@ -43,14 +43,17 @@ jobs:
           port: ${{ secrets.PORT }}
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
-#      - name: 在服务器上执行 java -jar，请确保服务器安装了 JDK
-#        if: always()
-#        uses: fifsky/ssh-action@master
-#        with:
-#          command: | # 命令中的 & 表示在后台运行进程
-#            cd blog.imzjw.cn/actions/ && java -jar github-actions-springboot.jar &
-#          host: ${{ secrets.HOST }}
-#          port: ${{ secrets.PORT }}
-#          user: ${{ secrets.SSH_USER }}
-#          pass: ${{ secrets.SSH_PASSWORD }}
-#          args: "-tt"
+      - name: 在服务器上执行 java -jar，请确保服务器安装了 JDK
+        if: always()
+        uses: fifsky/ssh-action@master
+        with:
+          command: | # 命令中的 & 表示在后台运行进程
+            cd /volume1/docker/douban-movie-robot
+            docker build -t jacksaoding/douban_movie_robot . -f Dockerfile --platform linux/amd64
+            docker-compose up -d
+            docker push jacksaoding/douban_movie_robot:latest
+          host: ${{ secrets.HOST }}
+          port: ${{ secrets.PORT }}
+          user: ${{ secrets.SSH_USER }}
+          pass: ${{ secrets.SSH_PASSWORD }}
+          args: "-tt"
