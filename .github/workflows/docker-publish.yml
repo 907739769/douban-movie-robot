@@ -12,26 +12,23 @@ jobs:
     runs-on: ubuntu-latest
     name: Running Java ${{ matrix.java }} compile
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
-          java-version: 1.8
-      - name: 缓存 Maven 依赖
-        uses: actions/cache@v2
-        with:
-          path: ~/.m2/repository
-          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
-          restore-keys: |
-            ${{ runner.os }}-maven-
+          distribution: 'temurin'
+          java-version: '1.8'
+          cache: 'maven'
       - name: 编译代码
         run: mvn compile
       - name: Deploy the JAR file to the remote server
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Set up JDK 1.8
-        uses: actions/setup-java@v1
+        uses: actions/setup-java@v3
         with:
-          java-version: 1.8
+          distribution: 'temurin'
+          java-version: '1.8'
+          cache: 'maven'
       - name: Generate the package
         run: mvn -B package --file pom.xml -Dmaven.test.skip=true
       - name: 将 JAR 包部署到服务器
@@ -44,10 +41,9 @@ jobs:
           username: ${{ secrets.SSH_USER }}
           password: ${{ secrets.SSH_PASSWORD }}
       - name: 在服务器上执行编译docker镜像、安装docker应用及push到服务器
-        if: always()
         uses: fifsky/ssh-action@master
         with:
-          command: | # 命令中的 & 表示在后台运行进程
+          command: | 
             cd /volume1/docker/douban-movie-robot
             sudo docker build -t jacksaoding/douban_movie_robot . -f Dockerfile --platform linux/amd64
             sudo docker-compose up -d
