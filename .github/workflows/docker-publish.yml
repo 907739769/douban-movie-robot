@@ -31,25 +31,45 @@ jobs:
           cache: 'maven'
       - name: Generate the package
         run: mvn -B package --file pom.xml -Dmaven.test.skip=true
-      - name: 将 JAR 包部署到服务器
-        uses: garygrossgarten/github-action-scp@release
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
         with:
-          local: target/douban-movie-robot-0.0.1-SNAPSHOT.jar
-          remote: /docker/douban-movie-robot/application.jar
-          host: ${{ secrets.HOST }}
-          port: ${{ secrets.PORT }}
-          username: ${{ secrets.SSH_USER }}
-          password: ${{ secrets.SSH_PASSWORD }}
-      - name: 在服务器上执行编译docker镜像、安装docker应用及push到服务器
-        uses: fifsky/ssh-action@master
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+      - name: Build Latest Image
+        uses: docker/build-push-action@v3
         with:
-          command: | 
-            cd /volume1/docker/douban-movie-robot
-            sudo docker build -t jacksaoding/douban_movie_robot . -f Dockerfile --platform linux/amd64
-            sudo docker-compose up -d
-            sudo docker push jacksaoding/douban_movie_robot:latest
-          host: ${{ secrets.HOST }}
-          port: ${{ secrets.PORT }}
-          user: ${{ secrets.SSH_USER }}
-          pass: ${{ secrets.SSH_PASSWORD }}
-          args: "-tt"
+          context: docker
+          file: Dockerfile
+          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          push: true
+          tags: |
+            ${{ secrets.DOCKER_USERNAME }}/douban_movie_robot:latest
+#      - name: 将 JAR 包部署到服务器
+#        uses: garygrossgarten/github-action-scp@release
+#        with:
+#          local: target/douban-movie-robot-0.0.1-SNAPSHOT.jar
+#          remote: /docker/douban-movie-robot/application.jar
+#          host: ${{ secrets.HOST }}
+#          port: ${{ secrets.PORT }}
+#          username: ${{ secrets.SSH_USER }}
+#          password: ${{ secrets.SSH_PASSWORD }}
+#      - name: 在服务器上执行编译docker镜像、安装docker应用及push到服务器
+#        uses: fifsky/ssh-action@master
+#        with:
+#          command: |
+#            cd /volume1/docker/douban-movie-robot
+#            sudo docker build -t jacksaoding/douban_movie_robot . -f Dockerfile --platform linux/amd64
+#            sudo docker-compose up -d
+#            sudo docker push jacksaoding/douban_movie_robot:latest
+#          host: ${{ secrets.HOST }}
+#          port: ${{ secrets.PORT }}
+#          user: ${{ secrets.SSH_USER }}
+#          pass: ${{ secrets.SSH_PASSWORD }}
+#          args: "-tt"
