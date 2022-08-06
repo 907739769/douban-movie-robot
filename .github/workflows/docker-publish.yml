@@ -45,7 +45,7 @@ jobs:
       - name: Build Latest Image
         uses: docker/build-push-action@v3
         with:
-          build-context: /home/runner/work/douban-movie-robot/douban-movie-robot
+          build-contexts: /home/runner/work/douban-movie-robot/douban-movie-robot
           file: Dockerfile
           platforms: linux/amd64
           push: true
