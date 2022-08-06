@@ -53,7 +53,7 @@ jobs:
 #      - name: 将 JAR 包部署到服务器
 #        uses: garygrossgarten/github-action-scp@release
 #        with:
-#          local: target/douban-movie-robot-0.0.1-SNAPSHOT.jar
+#          local: target/application.jar
 #          remote: /docker/douban-movie-robot/application.jar
 #          host: ${{ secrets.HOST }}
 #          port: ${{ secrets.PORT }}
