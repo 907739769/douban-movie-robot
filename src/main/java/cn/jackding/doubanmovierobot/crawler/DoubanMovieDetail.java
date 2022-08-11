@@ -19,14 +19,14 @@ import java.util.List;
  */
 public class DoubanMovieDetail implements PageProcessor {
 
-    private final Site site = Site.me().setDomain("movie.douban.com");
+    private final Site site = Site.me().setDomain("movie.douban.com").setCycleRetryTimes(3);
 
     @Override
     public void process(Page page) {
         String imdb = page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">IMDb:</span>([^<]+)<br>"));
         String isJs = page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">集数:</span>(.*?)<br>"));
         String isPc = page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">单集片长:</span>(.*?)<br>"));
-        String otherName=page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">又名:</span>(.*?)<br>"));
+        String otherName = page.getHtml().selectDocument(new RegexSelector("<span class=\"pl\">又名:</span>(.*?)<br>"));
         page.putField(Constant.IMDB, StringUtils.isBlank(imdb) ? "" : imdb.trim());
         String videoType = Constant.MOVIE;
         if (StringUtils.isNotBlank(isJs) || StringUtils.isNotBlank(isPc)) {

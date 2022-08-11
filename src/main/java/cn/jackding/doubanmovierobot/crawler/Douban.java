@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class Douban implements PageProcessor {
 
-    private final Site site = Site.me().setDomain("movie.douban.com");
+    private final Site site = Site.me().setDomain("movie.douban.com").setCycleRetryTimes(3);
 
     @Override
     public void process(Page page) {

@@ -19,6 +19,7 @@ import us.codecraft.webmagic.pipeline.ResultItemsCollectorPipeline;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -55,6 +56,13 @@ public class DoubanCore {
                 String movieUrl = movieUrlList.get(i);
                 String videoName = videoNameList.get(i);
                 String addDate = addDateList.get(i);
+
+                //休眠0.5秒
+                try {
+                    TimeUnit.MILLISECONDS.sleep(500);
+                } catch (InterruptedException e) {
+                    log.error("", e);
+                }
 
                 ResultItemsCollectorPipeline pipeline1 = new ResultItemsCollectorPipeline();
                 Spider.create(new DoubanMovieDetail()).addUrl(movieUrl)
