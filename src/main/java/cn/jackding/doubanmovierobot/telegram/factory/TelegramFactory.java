@@ -7,7 +7,7 @@ package cn.jackding.doubanmovierobot.telegram.factory;
  */
 public enum TelegramFactory {
 
-    DoSearchDouban("/DoSearchDouban", new DoSearchDouban())
+    DoSearchDouban("/dosearchdouban", new DoSearchDouban())
 
 
     ;
