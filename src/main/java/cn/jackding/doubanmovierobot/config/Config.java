@@ -31,8 +31,13 @@ public class Config {
 
     public static String sonarrLanguageProfileId;
 
-
     public static String scheduledTaskCron;
+
+    public static boolean telegramBotEnable;
+    public static String telegramBotName;
+    public static String telegramBotToken;
+    public static String telegramBotProxyHost;
+    public static int telegramBotProxyPort;
 
     @Value("${douban.userIds}")
     public void setDoubanUserIds(String doubanUserIds) {
@@ -89,5 +94,28 @@ public class Config {
         Config.scheduledTaskCron = scheduledTaskCron;
     }
 
+    @Value("${telegram.bot.name}")
+    public void setTelegramBotName(String telegramBotName) {
+        Config.telegramBotName = telegramBotName;
+    }
 
+    @Value("${telegram.bot.token}")
+    public void setTelegramBotToken(String telegramBotToken) {
+        Config.telegramBotToken = telegramBotToken;
+    }
+
+    @Value("${telegram.bot.proxy.host}")
+    public void setTelegramBotProxyHost(String telegramBotProxyHost) {
+        Config.telegramBotProxyHost = telegramBotProxyHost;
+    }
+
+    @Value("${telegram.bot.proxy.port}")
+    public void setTelegramBotProxyPort(int telegramBotProxyPort) {
+        Config.telegramBotProxyPort = telegramBotProxyPort;
+    }
+
+    @Value("${telegram.bot.enable:false}")
+    public void setTelegramBotEnable(boolean telegramBotEnable) {
+        Config.telegramBotEnable = telegramBotEnable;
+    }
 }
