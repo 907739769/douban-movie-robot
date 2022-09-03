@@ -15,6 +15,7 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
  * @Version 1.0.0
  */
 @Slf4j
+@Deprecated
 public class MovieTelegramBot extends TelegramLongPollingBot {
 
     protected MovieTelegramBot(DefaultBotOptions botOptions) {

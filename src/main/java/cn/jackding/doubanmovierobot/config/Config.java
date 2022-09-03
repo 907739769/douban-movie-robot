@@ -38,6 +38,7 @@ public class Config {
     public static String telegramBotToken;
     public static String telegramBotProxyHost;
     public static int telegramBotProxyPort;
+    public static long telegramUserId;
 
     @Value("${douban.userIds}")
     public void setDoubanUserIds(String doubanUserIds) {
@@ -117,5 +118,10 @@ public class Config {
     @Value("${telegram.bot.enable:false}")
     public void setTelegramBotEnable(boolean telegramBotEnable) {
         Config.telegramBotEnable = telegramBotEnable;
+    }
+
+    @Value("${telegram.user.id}")
+    public  void setTelegramUserId(long telegramUserId) {
+        Config.telegramUserId = telegramUserId;
     }
 }

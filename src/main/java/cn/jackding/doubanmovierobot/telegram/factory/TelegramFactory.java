@@ -5,6 +5,7 @@ package cn.jackding.doubanmovierobot.telegram.factory;
  * @Date 2022/9/2 21:28
  * @Version 1.0.0
  */
+@Deprecated
 public enum TelegramFactory {
 
     DoSearchDouban("/dosearchdouban", new DoSearchDouban())

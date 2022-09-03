@@ -48,6 +48,19 @@ public class SonarrUtils {
         return null;
     }
 
+    public static HttpClientResult searchSeriesByTvdbId(String tvdbId) {
+        Map<String, String> params = new HashMap<String, String>(1) {{
+            put("term", "tvdb:"+tvdbId);
+        }};
+        try {
+            HttpClientResult result = HttpClientUtils.doGet(url + "/api/v3/series/lookup", headers, params);
+            return result;
+        } catch (Exception e) {
+            log.error("", e);
+        }
+        return null;
+    }
+
     public static HttpClientResult addSeries(String seriesInfo) {
         JSONObject json = JSON.parseObject(seriesInfo);
         json.put("qualityProfileId", Config.sonarrQualityProfileId);

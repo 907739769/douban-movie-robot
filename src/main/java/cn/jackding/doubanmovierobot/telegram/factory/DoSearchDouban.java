@@ -7,6 +7,7 @@ import cn.jackding.doubanmovierobot.DoubanMovieRobotApplication;
  * @Date 2022/9/2 21:31
  * @Version 1.0.0
  */
+@Deprecated
 public class DoSearchDouban implements TelegramDo{
     @Override
     public String doIt() {

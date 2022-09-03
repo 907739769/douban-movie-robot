@@ -47,6 +47,19 @@ public class RadarrUtils {
         return null;
     }
 
+    public static HttpClientResult searchMovieByImdbId(String imdbId) {
+        Map<String, String> params = new HashMap<String, String>(1) {{
+            put("imdbId", imdbId);
+        }};
+        try {
+            HttpClientResult result = HttpClientUtils.doGet(url + "/api/v3/movie/lookup/imdb", headers, params);
+            return result;
+        } catch (Exception e) {
+            log.error("", e);
+        }
+        return null;
+    }
+
     public static HttpClientResult addMovie(String movieInfo) {
         JSONObject json = JSON.parseObject(movieInfo);
         json.put("qualityProfileId", Config.radarrQualityProfileId);
