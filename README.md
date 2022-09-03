@@ -29,6 +29,18 @@ sonarr.qualityProfileId=1
 sonarr.languageProfileId=3
 #定时任务cron   秒 分 时 天 月 星期
 scheduled.task.cron=0 0 2,10,12,14,16,19,21,23 * * ?
+#telegram机器人
+telegram.bot.enable=false
+#telegram机器人名称
+telegram.bot.name=test_bot
+#telegram机器人token
+telegram.bot.token=5234234843:ADrdsf3sqj4uUiwqY9asd2fFEeBJxASD2fk6Po
+#telegram机器人代理
+telegram.bot.proxy.host=127.0.0.1
+#telegram机器人代理端口
+telegram.bot.proxy.port=10809
+#telegram用户ID
+telegram.user.id=123456
 ```
 docker运行命令
 ```
