@@ -63,8 +63,8 @@ public class MovieAbilityBot extends AbilityBot {
                 .privacy(CREATOR)
                 .locality(USER)
                 .input(0)
-                .action(ctx -> silent.send(Constant.MOVIE_ANSWER_MOVIE, ctx.chatId()))
-                .reply((bot, upd) -> responseHandler.replyToSearchMovie(getChatId(upd), upd.getMessage().getText()), Flag.REPLY//回复
+                .action(ctx -> silent.forceReply(Constant.MOVIE_ANSWER_MOVIE, ctx.chatId()))
+                .reply((bot, upd) -> responseHandler.replyToSearchMovie(getChatId(upd), upd.getMessage().getText(),upd.getMessage().getMessageId()), Flag.REPLY//回复
                         , upd -> upd.getMessage().getReplyToMessage().getFrom().getUserName().equalsIgnoreCase(getBotUsername()),//回复的是机器人
                         upd -> upd.getMessage().getReplyToMessage().hasText(), upd -> upd.getMessage().getReplyToMessage().getText().equals(Constant.MOVIE_ANSWER_MOVIE)//回复的是上面的问题
                 )
@@ -83,8 +83,8 @@ public class MovieAbilityBot extends AbilityBot {
                 .privacy(CREATOR)
                 .locality(USER)
                 .input(0)
-                .action(ctx -> silent.send(Constant.SERIES_ANSWER_SERIES, ctx.chatId()))
-                .reply((bot, upd) -> responseHandler.replyToSearchSeries(getChatId(upd), upd.getMessage().getText()), Flag.REPLY//回复
+                .action(ctx -> silent.forceReply(Constant.SERIES_ANSWER_SERIES, ctx.chatId()))
+                .reply((bot, upd) -> responseHandler.replyToSearchSeries(getChatId(upd), upd.getMessage().getText(),upd.getMessage().getMessageId()), Flag.REPLY//回复
                         , upd -> upd.getMessage().getReplyToMessage().getFrom().getUserName().equalsIgnoreCase(getBotUsername()),//回复的是机器人
                         upd -> upd.getMessage().getReplyToMessage().hasText(), upd -> upd.getMessage().getReplyToMessage().getText().equals(Constant.SERIES_ANSWER_SERIES)//回复的是上面的问题
                 )

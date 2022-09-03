@@ -88,17 +88,18 @@ public class ResponseHandler {
      * @param chatId
      * @param movieName
      */
-    public void replyToSearchMovie(long chatId, String movieName) {
+    public void replyToSearchMovie(long chatId, String movieName, Integer messageId) {
         try {
             HttpClientResult movie = RadarrUtils.searchMovie(movieName);
             if (null == movie || StringUtils.isEmpty(movie.getContent())) {
-                sender.execute(SendMessage.builder().chatId(chatId).text("没有查询到任何电影!").build());
+                sender.execute(SendMessage.builder().chatId(chatId).replyToMessageId(messageId).text("没有查询到任何电影!").build());
                 return;
             }
 
             JSONArray movieJsonArray = JSONArray.parseArray(movie.getContent());
 
             sender.execute(SendMessage.builder()
+                    .replyToMessageId(messageId)
                     .text(Constant.CHOOSE_ONE_MOVIE)
                     .chatId(chatId)
                     .replyMarkup(KeyboardFactory.movieButtons(movieJsonArray)).build());
@@ -114,17 +115,18 @@ public class ResponseHandler {
      * @param chatId
      * @param seriesName
      */
-    public void replyToSearchSeries(long chatId, String seriesName) {
+    public void replyToSearchSeries(long chatId, String seriesName, Integer messageId) {
         try {
             HttpClientResult series = SonarrUtils.searchSeries(seriesName);
             if (null == series || StringUtils.isEmpty(series.getContent())) {
-                sender.execute(SendMessage.builder().chatId(chatId).text("没有查询到任何电视剧!").build());
+                sender.execute(SendMessage.builder().chatId(chatId).replyToMessageId(messageId).text("没有查询到任何电视剧!").build());
                 return;
             }
 
             JSONArray seriesJsonArray = JSONArray.parseArray(series.getContent());
 
             sender.execute(SendMessage.builder()
+                    .replyToMessageId(messageId)
                     .text(Constant.CHOOSE_ONE_SERIES)
                     .chatId(chatId)
                     .replyMarkup(KeyboardFactory.seriesButtons(seriesJsonArray)).build());
