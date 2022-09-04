@@ -5,6 +5,7 @@
 ## docker部署 
 
 配置文件`application.properties`放到`/volume1/docker/douban-movie-robot/config/`目录下
+
 ```
 # 可以设置多用户，逗号分隔，如: 5465465465,4445545
 # 豆瓣用户ID获取方式：网页登录之后网址https://www.douban.com/people/193538704/，193538704就是用户ID
@@ -27,7 +28,7 @@ sonarr.rootFolderPath=/tv
 sonarr.qualityProfileId=1
 #语言配置
 sonarr.languageProfileId=3
-#定时任务cron   秒 分 时 天 月 星期
+#定时任务cron       秒 分            时         天 月 星期
 scheduled.task.cron=0 0 2,10,12,14,16,19,21,23 * * ?
 #telegram机器人
 telegram.bot.enable=false
@@ -42,7 +43,9 @@ telegram.bot.proxy.port=10809
 #telegram用户ID
 telegram.user.id=123456
 ```
-docker运行命令
+
+docker CLI安装
+
 ```
 docker run -d \
 --name=douban_movie_robot \
@@ -50,4 +53,32 @@ docker run -d \
 -v /volume1/docker/douban-movie-robot/config:/config \
 --restart unless-stopped \
 jacksaoding/douban_movie_robot:latest
+```
+
+docker compose安装
+
+```
+version: "3"
+services:
+  app:
+    container_name: douban_movie_robot
+    image: 'jacksaoding/douban_movie_robot:latest'
+    restart: unless-stopped
+    network_mode: "host"
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - /volume1/docker/douban-movie-robot/config:/config
+```
+
+## Telegram机器人
+
+如果开启了Telegram机器人，并配置了相关参数，可以在机器人中使用如下命令。在机器人聊天窗口输入`/douban`可以
+立即执行豆瓣搜索，`/movie`是搜索电影，`/series`是搜索电视剧。搜索完成之后，点击想要的电影或者电视剧就会添加
+到radarr或者sonarr中。
+
+```
+/douban - 重新执行豆瓣搜索服务
+/movie - 搜索电影
+/series - 搜索电视剧
 ```

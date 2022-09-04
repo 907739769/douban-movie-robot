@@ -9,6 +9,7 @@ import com.alibaba.fastjson2.JSONArray;
 import com.alibaba.fastjson2.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.util.CollectionUtils;
 import org.telegram.abilitybots.api.db.DBContext;
 import org.telegram.abilitybots.api.sender.MessageSender;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
@@ -91,7 +92,7 @@ public class ResponseHandler {
     public void replyToSearchMovie(long chatId, String movieName, Integer messageId) {
         try {
             HttpClientResult movie = RadarrUtils.searchMovie(movieName);
-            if (null == movie || StringUtils.isEmpty(movie.getContent())) {
+            if (null == movie || StringUtils.isEmpty(movie.getContent()) || CollectionUtils.isEmpty(JSONArray.parseArray(movie.getContent()))) {
                 sender.execute(SendMessage.builder().chatId(chatId).replyToMessageId(messageId).text("没有查询到任何电影!").build());
                 return;
             }
@@ -118,7 +119,7 @@ public class ResponseHandler {
     public void replyToSearchSeries(long chatId, String seriesName, Integer messageId) {
         try {
             HttpClientResult series = SonarrUtils.searchSeries(seriesName);
-            if (null == series || StringUtils.isEmpty(series.getContent())) {
+            if (null == series || StringUtils.isEmpty(series.getContent()) || CollectionUtils.isEmpty(JSONArray.parseArray(series.getContent()))) {
                 sender.execute(SendMessage.builder().chatId(chatId).replyToMessageId(messageId).text("没有查询到任何电视剧!").build());
                 return;
             }
