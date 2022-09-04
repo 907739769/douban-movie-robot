@@ -42,10 +42,10 @@ public class ResponseHandler {
             JSONObject json = JSONObject.parseObject(movie.getContent());
             if (null == RadarrUtils.addMovie(json.toJSONString())) {
                 log.info("添加电影{}失败", buttonId);
-                sender.execute(SendMessage.builder().chatId(chatId).text("添加电影失败").build());
+                sender.execute(SendMessage.builder().chatId(chatId).text("添加电影《" + json.getString("title") + "》失败").build());
             } else {
                 log.info("添加电影{}完成", buttonId);
-                sender.execute(SendMessage.builder().chatId(chatId).text("添加电影完成").build());
+                sender.execute(SendMessage.builder().chatId(chatId).text("添加电影《" + json.getString("title") + "》完成").build());
             }
 
         } catch (Exception e) {
@@ -63,7 +63,7 @@ public class ResponseHandler {
         try {
             //通过tvdb id搜索
             HttpClientResult series = SonarrUtils.searchSeriesByTvdbId(buttonId);
-            if (null == series || StringUtils.isEmpty(series.getContent())) {
+            if (null == series || StringUtils.isEmpty(series.getContent()) || CollectionUtils.isEmpty(JSONArray.parseArray(series.getContent()))) {
                 log.info("添加电视剧{}失败", buttonId);
                 sender.execute(SendMessage.builder().chatId(chatId).text("查询电视剧失败").build());
                 return;
@@ -72,10 +72,10 @@ public class ResponseHandler {
             JSONArray movieJsonArray = JSONArray.parseArray(series.getContent());
             if (null == SonarrUtils.addSeries(JSON.parseObject(movieJsonArray.get(0).toString()).toJSONString())) {
                 log.info("添加电视剧{}失败", buttonId);
-                sender.execute(SendMessage.builder().chatId(chatId).text("添加电视剧失败").build());
+                sender.execute(SendMessage.builder().chatId(chatId).text("添加电视剧《" + JSON.parseObject(movieJsonArray.get(0).toString()).getString("title") + "》失败").build());
             } else {
                 log.info("添加电视剧{}完成", buttonId);
-                sender.execute(SendMessage.builder().chatId(chatId).text("添加电视剧完成").build());
+                sender.execute(SendMessage.builder().chatId(chatId).text("添加电视剧《" + JSON.parseObject(movieJsonArray.get(0).toString()).getString("title") + "》完成").build());
             }
 
         } catch (Exception e) {
