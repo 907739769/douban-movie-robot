@@ -23,10 +23,7 @@ public class Telegram {
 
         botOptions.setProxyHost(Config.telegramBotProxyHost);
         botOptions.setProxyPort(Config.telegramBotProxyPort);
-        // Select proxy type: [HTTP|SOCKS4|SOCKS5] (default: NO_PROXY)
         botOptions.setProxyType(DefaultBotOptions.ProxyType.HTTP);
-        //自定义的事件响应机器人
-        // telegramBotsApi.registerBot(new MovieTelegramBot(botOptions));
         //使用AbilityBot创建的事件响应机器人
         telegramBotsApi.registerBot(new MovieAbilityBot(Config.telegramBotToken, Config.telegramBotName, botOptions));
     }
